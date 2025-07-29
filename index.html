@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <title>Tech Gadgets Store</title>
+ <!-- Bootstrap CSS -->
+ <link
+ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+ rel="stylesheet"
+ />
+ <style>
+ body {
+ padding-top: 70px;
+ }
+ .sidebar {
+ max-width: 250px;
+ }
+ .product-card {
+ cursor: pointer;
+ }
+ /* For multi-level dropdown (Bootstrap 5 doesn't support it natively) */
+ .dropdown-submenu {
+ position: relative;
+ }
+
+ .card-img-top {
+ width: 100%;
+ height: 200px; /* or any height you want */
+ object-fit: cover;
+}
+
+.card-body {
+ display: flex;
+ flex-direction: column;
+}
+ .dropdown-submenu > .dropdown-menu {
+ top: 0;
+ left: 100%;
+ margin-left: 0.1rem;
+ margin-right: 0.1rem;
+ }
+
+ /* Breadcrumbs style */
+ .breadcrumb-item + .breadcrumb-item::before {
+ content: ">";
+ }
+ </style>
+</head>
+<body>
+ <!-- Navbar -->
+ <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+ <div class="container-fluid">
+ <a class="navbar-brand" href="#" id="nav-home">Tech Gadgets</a>
+ <button
+ class="navbar-toggler"
+ type="button"
+ data-bs-toggle="collapse"
+ data-bs-target="#navbarNavDropdown"
+ aria-controls="navbarNavDropdown"
+ aria-expanded="false"
+ aria-label="Toggle navigation"
+ >
+ <span class="navbar-toggler-icon"></span>
+ </button>
+ <div
+ class="collapse navbar-collapse"
+ id="navbarNavDropdown"
+ >
+ <ul class="navbar-nav">
+ <li class="nav-item dropdown">
+ <a
+ class="nav-link dropdown-toggle"
+ href="#"
+ role="button"
+ data-bs-toggle="dropdown"
+ aria-expanded="false"
+ id="categoriesDropdown"
+ >
+ Categories
+ </a>
+ <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+ <li class="dropdown-submenu">
+ <a
+ class="dropdown-item dropdown-toggle"
+ href="#"
+ data-category="Electronics"
+ >
+ Electronics
+ </a>
+ <ul class="dropdown-menu">
+ <li>
+ <a class="dropdown-item category-link" href="#" data-category="Electronics > Smartphones"
+ >Smartphones</a
+ >
+ </li>
+ <li>
+ <a class="dropdown-item category-link" href="#" data-category="Electronics > Laptops"
+ >Laptops</a
+ >
+ </li>
+ </ul>
+ </li>
+ <li class="dropdown-submenu">
+ <a
+ class="dropdown-item dropdown-toggle"
+ href="#"
+ data-category="Accessories"
+ >
+ Accessories
+ </a>
+ <ul class="dropdown-menu">
+ <li>
+ <a class="dropdown-item category-link" href="#" data-category="Accessories > Headphones"
+ >Headphones</a
+ >
+ </li>
+ <li>
+ <a class="dropdown-item category-link" href="#" data-category="Accessories > Chargers"
+ >Chargers</a
+ >
+ </li>
+ </ul>
+ </li>
+ </ul>
+ </li>
+ </ul>
+ </div>
+ </div>
+ </nav>
+
+ <!-- Main content -->
+ <div class="container">
+ <!-- Breadcrumbs -->
+ <nav aria-label="breadcrumb">
+ <ol class="breadcrumb" id="breadcrumb">
+ <li class="breadcrumb-item active" aria-current="page">Home</li>
+ </ol>
+ </nav>
+
+ <div class="row">
+ <!-- Sidebar filters -->
+ <aside class="col-md-3 sidebar">
+ <h5>Filters</h5>
+ <hr />
+ <div class="mb-3">
+ <h6>Brand</h6>
+ <div>
+ <div class="form-check">
+ <input
+ class="form-check-input brand-filter"
+ type="checkbox"
+ value="Apple"
+ id="brandApple"
+ />
+ <label class="form-check-label" for="brandApple">Apple</label>
+ </div>
+ <div class="form-check">
+ <input
+ class="form-check-input brand-filter"
+ type="checkbox"
+ value="Samsung"
+ id="brandSamsung"
+ />
+ <label class="form-check-label" for="brandSamsung">Samsung</label>
+ </div>
+ <div class="form-check">
+ <input
+ class="form-check-input brand-filter"
+ type="checkbox"
+ value="Dell"
+ id="brandDell"
+ />
+ <label class="form-check-label" for="brandDell">Dell</label>
+ </div>
+ </div>
+ </div>
+
+ <div class="mb-3">
+ <h6>Price Range</h6>
+ <div>
+ <div class="form-check">
+ <input
+ class="form-check-input price-filter"
+ type="checkbox"
+ value="0-500"
+ id="price0-500"
+ />
+ <label class="form-check-label" for="price0-500">$0 - $500</label>
+ </div>
+ <div class="form-check">
+ <input
+ class="form-check-input price-filter"
+ type="checkbox"
+ value="501-1000"
+ id="price501-1000"
+ />
+ <label class="form-check-label" for="price501-1000">$501 - $1000</label>
+ </div>
+ </div>
+ </div>
+ </aside>
+
+ <!-- Product list -->
+ <main class="col-md-9">
+ <div class="row" id="product-list">
+ <!-- Products will be rendered here -->
+ </div>
+ </main>
+ </div>
+ </div>
+
+ <!-- Bootstrap JS and Popper -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+ <script>
+ // Sample product data
+ const products = [
+ {
+ id: 1,
+ name: "iPhone 14",
+ category: "Electronics > Smartphones",
+ brand: "Apple",
+ price: 799,
+ image: "https://www.imagineonline.store/cdn/shop/files/iPhone_15_Green_PDP_Image_Position-1__en-IN.jpg?v=1694605400",
+ },
+ {
+ id: 2,
+ name: "Samsung Galaxy S21",
+ category: "Electronics > Smartphones",
+ brand: "Samsung",
+ price: 699,
+ image: "https://images.samsung.com/is/image/samsung/p6pim/hk_en/galaxy-s21/gallery/hk-en-galaxy-s21-5g-g991-sm-g9910zigtgy-368805533?$720_576_JPG$",
+ },
+ {
+ id: 3,
+ name: "Dell XPS 13",
+ category: "Electronics > Laptops",
+ brand: "Dell",
+ price: 999,
+ image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGDrs_6EfarSC7aH30IGKzCK6vS1SXFk3ypw&s",
+ },
+ {
+ id: 4,
+ name: "Apple MacBook Air",
+ category: "Electronics > Laptops",
+ brand: "Apple",
+ price: 999,
+ image: "https://buy-it.pl/317909-large_default/apple-macbook-air-13inch-mly43ze-a-z1-m2-chip-with-8-core-cpu-and-10-core-gpu-8gb-ram-512gb-67w-usb-c-midnight.jpg",
+ },
+ {
+ id: 5,
+ name: "Sony Headphones",
+ category: "Accessories > Headphones",
+ brand: "Sony",
+ price: 199,
+ image: "https://cdn.mos.cms.futurecdn.net/krMdUog4bxjkXzUVDhWLHJ.jpg",
+ },
+ {
+ id: 6,
+ name: "Anker Charger",
+ category: "Accessories > Chargers",
+ brand: "Anker",
+ price: 49,
+ image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyLJtm-9vs_y2-EugaB-9D2FW1YkVwVVvbJw&s",
+ },
+ ];
+
+ let selectedCategory = null; // e.g., "Electronics > Smartphones"
+
+ // Function to render products based on filters and category
+ function renderProducts() {
+ const productList = document.getElementById("product-list");
+ productList.innerHTML = "";
+
+ // Get selected brands
+ const brandFilters = Array.from(
+ document.querySelectorAll(".brand-filter:checked")
+ ).map((input) => input.value);
+
+ // Get selected price ranges
+ const priceFilters = Array.from(
+ document.querySelectorAll(".price-filter:checked")
+ ).map((input) => input.value);
+
+ // Filter products
+ let filteredProducts = products;
+
+ if (selectedCategory) {
+ filteredProducts = filteredProducts.filter((p) =>
+ p.category.startsWith(selectedCategory)
+ );
+ }
+
+ if (brandFilters.length > 0) {
+ filteredProducts = filteredProducts.filter((p) =>
+ brandFilters.includes(p.brand)
+ );
+ }
+
+ if (priceFilters.length > 0) {
+ filteredProducts = filteredProducts.filter((p) => {
+ return priceFilters.some((range) => {
+ const [min, max] = range.split("-").map(Number);
+ return p.price >= min && p.price <= max;
+ });
+ });
+ }
+
+ if (filteredProducts.length === 0) {
+ productList.innerHTML =
+ '<p class="text-muted">No products match your filters.</p>';
+ return;
+ }
+
+ filteredProducts.forEach((product) => {
+ const col = document.createElement("div");
+ col.className = "col-md-4 mb-4";
+
+ col.innerHTML = `
+ <div class="card product-card h-100">
+ <img src="${product.image}" class="card-img-top" alt="${product.name}" />
+ <div class="card-body d-flex flex-column">
+ <h5 class="card-title">${product.name}</h5>
+ <p class="card-text mb-1"><strong>Brand:</strong> ${product.brand}</p>
+ <p class="card-text mb-2"><strong>Price:</strong> $${product.price}</p>
+ <button class="btn btn-secondary mt-auto product-detail-btn" data-id="${product.id}">View Details</button>
+ </div>
+ </div>
+ `;
+ productList.appendChild(col);
+ });
+ }
+
+ // Update breadcrumb
+ function updateBreadcrumb(path) {
+ const breadcrumb = document.getElementById("breadcrumb");
+ breadcrumb.innerHTML = "";
+
+ const parts = path ? path.split(" > ") : [];
+
+ // Always add Home first
+ const liHome = document.createElement("li");
+ liHome.className = "breadcrumb-item";
+ liHome.innerHTML = '<a href="#" id="breadcrumb-home">Home</a>';
+ breadcrumb.appendChild(liHome);
+
+ parts.forEach((part, idx) => {
+ const li = document.createElement("li");
+ if (idx === parts.length - 1) {
+ li.className = "breadcrumb-item active";
+ li.setAttribute("aria-current", "page");
+ li.textContent = part;
+ } else {
+ li.className = "breadcrumb-item";
+ li.innerHTML = `<a href="#" data-path="${parts
+ .slice(0, idx + 1)
+ .join(" > ")}">${part}</a>`;
+ }
+ breadcrumb.appendChild(li);
+ });
+
+ if (parts.length === 0) {
+ // If no category, set Home active
+ liHome.classList.add("active");
+ liHome.setAttribute("aria-current", "page");
+ liHome.innerHTML = "Home";
+ }
+ }
+
+ // Initialize multi-level dropdowns for Bootstrap 5 (hover)
+ document.querySelectorAll(".dropdown-submenu > a").forEach((el) => {
+ el.addEventListener("click", function (e) {
+ e.preventDefault();
+ const submenu = this.nextElementSibling;
+ if (submenu.classList.contains("show")) {
+ submenu.classList.remove("show");
+ } else {
+ // Close other open submenus
+ this.closest(".dropdown-menu").querySelectorAll(".dropdown-menu.show").forEach((m) => m.classList.remove("show"));
+ submenu.classList.add("show");
+ }
+ });
+ });
+
+ // Hide submenu when clicking outside
+ document.addEventListener("click", (e) => {
+ if (!e.target.closest(".dropdown-submenu")) {
+ document.querySelectorAll(".dropdown-submenu .dropdown-menu.show").forEach((m) =>
+ m.classList.remove("show")
+ );
+ }
+ });
+
+ // Handle category clicks
+ document.querySelectorAll(".category-link").forEach((link) => {
+ link.addEventListener("click", (e) => {
+ e.preventDefault();
+ selectedCategory = e.target.dataset.category;
+ updateBreadcrumb(selectedCategory);
+ renderProducts();
+
+ // Clear filters on category change
+ document.querySelectorAll(".brand-filter, .price-filter").forEach((input) => {
+ input.checked = false;
+ });
+ });
+ });
+
+ // Handle Home breadcrumb and nav home click
+ document.getElementById("breadcrumb").addEventListener("click", (e) => {
+ if (e.target.id === "breadcrumb-home" || e.target === e.currentTarget.querySelector("#breadcrumb-home")) {
+ e.preventDefault();
+ selectedCategory = null;
+ updateBreadcrumb(null);
+ renderProducts();
+
+ document.querySelectorAll(".brand-filter, .price-filter").forEach((input) => {
+ input.checked = false;
+ });
+ } else if (e.target.matches("[data-path]")) {
+ e.preventDefault();
+ selectedCategory = e.target.dataset.path;
+ updateBreadcrumb(selectedCategory);
+ renderProducts();
+
+ document.querySelectorAll(".brand-filter, .price-filter").forEach((input) => {
+ input.checked = false;
+ });
+ }
+ });
+
+ document.getElementById("nav-home").addEventListener("click", (e) => {
+ e.preventDefault();
+ selectedCategory = null;
+ updateBreadcrumb(null);
+ renderProducts();
+
+ document.querySelectorAll(".brand-filter, .price-filter").forEach((input) => {
+ input.checked = false;
+ });
+ });
+
+ // Handle filter changes
+ document.querySelectorAll(".brand-filter, .price-filter").forEach((input) => {
+ input.addEventListener("change", () => {
+ renderProducts();
+ });
+ });
+
+ // Initial render
+ updateBreadcrumb(null);
+ renderProducts();
+ </script>
+</body>
+</html>
