@@ -1,120 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IZAH 3D Center Carousel</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>3D Curved Carousel</title>
 
 <style>
   body {
-    margin: 0;
-    padding: 0;
-    background: #eef1f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: #111;
     height: 100vh;
-    font-family: Arial;
-  }
-
-  .carousel-wrapper {
-    width: 90%;
-    max-width: 600px;
-    overflow: hidden;
-    perspective: 1200px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: sans-serif;
   }
 
   .carousel {
+    position: relative;
+    width: 80vw;
+    height: 350px;
+    perspective: 2000px;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
     display: flex;
     gap: 40px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding: 20px;
-    transform-style: preserve-3d;
-    scrollbar-width: none;
+    padding: 0 40vw; 
   }
 
   .carousel::-webkit-scrollbar {
     display: none;
   }
 
-  .carousel img {
-    width: 260px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 14px;
-    flex-shrink: 0;
+  .item {
+    width: 300px;
+    height: 300px;
     scroll-snap-align: center;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-style: preserve-3d;
+    transition: transform 0.2s ease-out;
+  }
+
+  .item img {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    object-fit: cover;
   }
 </style>
 </head>
 
 <body>
 
-<div class="carousel-wrapper">
-  <div class="carousel" id="carousel3D">
-    <img src="https://picsum.photos/id/1043/400/300">
-    <img src="https://picsum.photos/id/1025/400/300">
-    <img src="https://picsum.photos/id/1021/400/300">
-    <img src="https://picsum.photos/id/1035/400/300">
-    <img src="https://picsum.photos/id/1018/400/300">
-  </div>
+<div class="carousel" id="carousel">
+  <!-- repeat your images -->
+  <div class="item"><img src="https://images.unsplash.com/photo-1523437237164-d442d57cc3c9?w=400"></div>
+  <div class="item"><img src="https://images.unsplash.com/photo-1421930866250-aa0594cea05c?w=400"></div>
+  <div class="item"><img src="https://images.unsplash.com/photo-1536152470836-b943b246224c?w=400"></div>
+  <div class="item"><img src="https://images.unsplash.com/photo-1491824989090-cc2d0b57eb0d?w=400"></div>
+  <div class="item"><img src="https://images.unsplash.com/photo-1518717202715-9fa9d099f58a?w=400"></div>
+  <div class="item"><img src="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=400"></div>
 </div>
 
 <script>
-  const slider = document.getElementById('carousel3D');
+const track = document.getElementById("carousel");
 
-  slider.addEventListener('scroll', apply3D);
-  window.addEventListener('load', apply3D);
+function updateItems() {
+  const items = [...document.querySelectorAll(".item")];
+  const center = window.innerWidth / 2;
 
-  function apply3D() {
-    const images = slider.querySelectorAll('img');
-    const center = slider.scrollLeft + slider.clientWidth / 2;
+  items.forEach(item => {
+    const rect = item.getBoundingClientRect();
+    const itemCenter = rect.left + rect.width / 2;
+    const distance = itemCenter - center;
 
-    images.forEach(img => {
-      const imgCenter = img.offsetLeft + img.clientWidth / 2;
-      const diff = imgCenter - center;
+    const rotate = distance / 8; 
+    const translateZ = -Math.abs(distance) / 3;
 
-      // Angle for 3D rotation. Bigger diff -> more curve.
-      const angle = diff / 15;
-
-      // Depth. Moves images slightly back to increase realism.
-      const translateZ = -Math.min(Math.abs(diff) / 10, 80);
-
-      // Scale: center bigger, sides shrink slightly.
-      const scale = 1 - Math.min(Math.abs(diff) / 600, 0.4);
-
-      // Opacity fades outward.
-      const opacity = 1 - Math.min(Math.abs(diff) / 500, 0.6);
-
-      img.style.transform = `
-        rotateY(${angle}deg)
-        translateZ(${translateZ}px)
-        scale(${scale})
-      `;
-      img.style.opacity = opacity;
-    });
-  }
-
-  // Smooth dragging for mouse users
-  let isDown = false, startX, scrollLeft;
-
-  slider.addEventListener('mousedown', e => {
-    isDown = true;
-    startX = e.pageX - slider.offsetLeft;
-    scrollLeft = slider.scrollLeft;
+    item.style.transform = `
+      translateZ(${translateZ}px)
+      rotateY(${rotate}deg)
+    `;
   });
+}
 
-  slider.addEventListener('mouseleave', () => isDown = false);
-  slider.addEventListener('mouseup', () => isDown = false);
-
-  slider.addEventListener('mousemove', e => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    slider.scrollLeft = scrollLeft - (x - startX);
-  });
+updateItems();
+track.addEventListener("scroll", updateItems);
+window.addEventListener("resize", updateItems);
 </script>
 
 </body>
