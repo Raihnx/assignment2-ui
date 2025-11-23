@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smooth 3D Curved Carousel</title>
+<title>Smooth Curved 3D Carousel</title>
 
 <style>
   body {
@@ -19,8 +19,8 @@
     width: 100%;
     overflow-x: scroll;
     display: flex;
-    gap: 40px;
-    padding: 40px;
+    gap: 10px; /* LESS SPACE */
+    padding: 40px 40px;
     scroll-behavior: smooth;
     perspective: 1600px;
   }
@@ -30,13 +30,13 @@
   }
 
   .card {
-    width: 240px;
-    height: 300px;
-    border-radius: 20px;
+    width: 220px;     /* slightly smaller to fit tighter */
+    height: 280px;
+    border-radius: 18px;
     overflow: hidden;
+    flex-shrink: 0;
     transform-style: preserve-3d;
     transition: transform 0.15s linear;
-    flex-shrink: 0;
     background: #222;
   }
 
@@ -61,8 +61,8 @@
 <script>
 const slider = document.getElementById("carousel");
 const cards = [...document.querySelectorAll(".card")];
-const cardWidth = 240 + 40; // width + gap
-const curveStrength = 50;   // adjust curvature
+const cardWidth = 220 + 10; // width + gap
+const curveStrength = 30;   // LOWER = MORE CURVE
 
 function update() {
   const scrollCenter = slider.scrollLeft + slider.clientWidth / 2;
@@ -70,11 +70,11 @@ function update() {
   cards.forEach((card, i) => {
     const cardCenter = i * cardWidth + cardWidth / 2;
 
-    // distance from the scrolling center
+    // distance from center
     const dx = cardCenter - scrollCenter;
 
-    // Pure math curve – stable, no layout thrashing
-    const angle = dx / 15;         
+    // stronger curve
+    const angle = dx / 10;               // more aggressive curve
     const depth = -Math.abs(dx) / curveStrength;
 
     card.style.transform = `
