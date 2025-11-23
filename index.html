@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IZAH Carousel Demo</title>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #f2f2f7;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 20px;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    scrollbar-width: none;
+  }
+
+  .carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel img {
+    width: 260px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .carousel img:active {
+    transform: scale(0.95);
+  }
+</style>
+</head>
+
+<body>
+
+<div class="carousel">
+  <img src="https://picsum.photos/id/1018/400/300" alt="pic1">
+  <img src="https://picsum.photos/id/1025/400/300" alt="pic2">
+  <img src="https://picsum.photos/id/1003/400/300" alt="pic3">
+</div>
+
+<script>
+  const slider = document.querySelector('.carousel');
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  slider.addEventListener('mousedown', e => {
+    isDown = true;
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+  });
+  slider.addEventListener('mouseleave', () => isDown = false);
+  slider.addEventListener('mouseup', () => isDown = false);
+  slider.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    slider.scrollLeft = scrollLeft - (x - startX);
+  });
+</script>
+
+</body>
+</html>
