@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smooth Curved 3D Carousel</title>
+<title>Infinite 3D Curved Carousel</title>
 
 <style>
   body {
@@ -13,16 +13,18 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    overflow: hidden;
   }
 
   .carousel {
     width: 100%;
     overflow-x: scroll;
     display: flex;
-    gap: 10px; /* LESS SPACE */
-    padding: 40px 40px;
-    scroll-behavior: smooth;
+    gap: 10px;
+    padding: 40px;
+    scroll-behavior: auto;
     perspective: 1600px;
+    scroll-snap-type: x mandatory;
   }
 
   .carousel::-webkit-scrollbar {
@@ -30,7 +32,7 @@
   }
 
   .card {
-    width: 220px;     /* slightly smaller to fit tighter */
+    width: 220px;
     height: 280px;
     border-radius: 18px;
     overflow: hidden;
@@ -51,6 +53,7 @@
 <body>
 
 <div class="carousel" id="carousel">
+  <!-- ORIGINAL IMAGES -->
   <div class="card"><img src="https://picsum.photos/400?1"></div>
   <div class="card"><img src="https://picsum.photos/400?2"></div>
   <div class="card"><img src="https://picsum.photos/400?3"></div>
@@ -60,21 +63,29 @@
 
 <script>
 const slider = document.getElementById("carousel");
-const cards = [...document.querySelectorAll(".card")];
-const cardWidth = 220 + 10; // width + gap
-const curveStrength = 30;   // LOWER = MORE CURVE
+let cards = [...document.querySelectorAll(".card")];
+const total = cards.length;
+
+// Cloning for infinite loop
+cards.forEach(card => slider.appendChild(card.cloneNode(true)));
+cards.forEach(card => slider.insertBefore(card.cloneNode(true), slider.firstChild));
+
+cards = [...document.querySelectorAll(".card")];
+
+const cardWidth = 220 + 10;
+const curveStrength = 30;
+
+// Center the real first row
+slider.scrollLeft = cardWidth * total;
 
 function update() {
   const scrollCenter = slider.scrollLeft + slider.clientWidth / 2;
 
   cards.forEach((card, i) => {
     const cardCenter = i * cardWidth + cardWidth / 2;
-
-    // distance from center
     const dx = cardCenter - scrollCenter;
 
-    // stronger curve
-    const angle = dx / 10;               // more aggressive curve
+    const angle = dx / 10;
     const depth = -Math.abs(dx) / curveStrength;
 
     card.style.transform = `
@@ -82,6 +93,14 @@ function update() {
       translateZ(${depth}px)
     `;
   });
+
+  // Infinite loop logic
+  if (slider.scrollLeft <= cardWidth) {
+    slider.scrollLeft += cardWidth * total;
+  } 
+  else if (slider.scrollLeft >= cardWidth * (total * 2)) {
+    slider.scrollLeft -= cardWidth * total;
+  }
 }
 
 update();
