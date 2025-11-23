@@ -1,50 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>3D Curved Carousel</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curved 3D Slider</title>
 
 <style>
   body {
     background: #111;
-    height: 100vh;
     margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-family: sans-serif;
+    padding: 20px;
   }
 
-  .carousel {
-    position: relative;
-    width: 80vw;
-    height: 350px;
-    perspective: 2000px;
+  .slider-wrapper {
+    width: 100%;
     overflow-x: scroll;
-    scroll-snap-type: x mandatory;
     display: flex;
-    gap: 40px;
-    padding: 0 40vw; 
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding: 40px 0;
   }
 
-  .carousel::-webkit-scrollbar {
+  .slider-wrapper::-webkit-scrollbar {
     display: none;
   }
 
-  .item {
-    width: 300px;
+  .card {
+    width: 240px;
     height: 300px;
-    scroll-snap-align: center;
-    transform-style: preserve-3d;
+    flex-shrink: 0;
+    border-radius: 16px;
+    overflow: hidden;
     transition: transform 0.2s ease-out;
+    transform-style: preserve-3d;
   }
 
-  .item img {
+  .card img {
     width: 100%;
     height: 100%;
-    border-radius: 16px;
     object-fit: cover;
   }
 </style>
@@ -52,41 +45,39 @@
 
 <body>
 
-<div class="carousel" id="carousel">
-  <!-- repeat your images -->
-  <div class="item"><img src="https://images.unsplash.com/photo-1523437237164-d442d57cc3c9?w=400"></div>
-  <div class="item"><img src="https://images.unsplash.com/photo-1421930866250-aa0594cea05c?w=400"></div>
-  <div class="item"><img src="https://images.unsplash.com/photo-1536152470836-b943b246224c?w=400"></div>
-  <div class="item"><img src="https://images.unsplash.com/photo-1491824989090-cc2d0b57eb0d?w=400"></div>
-  <div class="item"><img src="https://images.unsplash.com/photo-1518717202715-9fa9d099f58a?w=400"></div>
-  <div class="item"><img src="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=400"></div>
+<div class="slider-wrapper" id="slider">
+  <div class="card"><img src="https://images.unsplash.com/photo-1523437237164-d442d57cc3c9?w=400"></div>
+  <div class="card"><img src="https://images.unsplash.com/photo-1421930866250-aa0594cea05c?w=400"></div>
+  <div class="card"><img src="https://images.unsplash.com/photo-1536152470836-b943b246224c?w=400"></div>
+  <div class="card"><img src="https://images.unsplash.com/photo-1491824989090-cc2d0b57eb0d?w=400"></div>
+  <div class="card"><img src="https://images.unsplash.com/photo-1518717202715-9fa9d099f58a?w=400"></div>
 </div>
 
 <script>
-const track = document.getElementById("carousel");
+const slider = document.getElementById("slider");
 
-function updateItems() {
-  const items = [...document.querySelectorAll(".item")];
-  const center = window.innerWidth / 2;
+function apply3DCurve() {
+  const cards = [...document.querySelectorAll(".card")];
+  const center = slider.scrollLeft + slider.clientWidth / 2;
 
-  items.forEach(item => {
-    const rect = item.getBoundingClientRect();
-    const itemCenter = rect.left + rect.width / 2;
-    const distance = itemCenter - center;
+  cards.forEach(card => {
+    const rect = card.getBoundingClientRect();
+    const cardCenter = rect.left + rect.width / 2;
+    const distance = cardCenter - (window.innerWidth / 2);
 
-    const rotate = distance / 8; 
-    const translateZ = -Math.abs(distance) / 3;
+    const rotate = distance / 12;
+    const depth = -Math.abs(distance) / 4;
 
-    item.style.transform = `
-      translateZ(${translateZ}px)
+    card.style.transform = `
+      translateZ(${depth}px)
       rotateY(${rotate}deg)
     `;
   });
 }
 
-updateItems();
-track.addEventListener("scroll", updateItems);
-window.addEventListener("resize", updateItems);
+apply3DCurve();
+slider.addEventListener("scroll", apply3DCurve);
+window.addEventListener("resize", apply3DCurve);
 </script>
 
 </body>
