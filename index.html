@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Infinite 3D Curved Carousel</title>
+<title>Smooth Curved 3D Carousel</title>
 
 <style>
   body {
@@ -13,18 +13,16 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden;
   }
 
   .carousel {
     width: 100%;
     overflow-x: scroll;
     display: flex;
-    gap: 6px;                 /* smaller gap */
-    padding: 40px;
-    scroll-behavior: auto;
-    perspective: 1800px;
-    scroll-snap-type: x mandatory;
+    gap: 10px; /* LESS SPACE */
+    padding: 40px 40px;
+    scroll-behavior: smooth;
+    perspective: 1600px;
   }
 
   .carousel::-webkit-scrollbar {
@@ -32,13 +30,13 @@
   }
 
   .card {
-    width: 200px;             /* slightly smaller for tighter curve */
-    height: 260px;
+    width: 220px;     /* slightly smaller to fit tighter */
+    height: 280px;
     border-radius: 18px;
     overflow: hidden;
     flex-shrink: 0;
     transform-style: preserve-3d;
-    transition: transform 0.18s linear;
+    transition: transform 0.15s linear;
     background: #222;
   }
 
@@ -62,68 +60,33 @@
 
 <script>
 const slider = document.getElementById("carousel");
+const cards = [...document.querySelectorAll(".card")];
+const cardWidth = 220 + 10; // width + gap
+const curveStrength = 30;   // LOWER = MORE CURVE
 
-// ORIGINAL CARDS
-const originals = [...document.querySelectorAll(".card")];
-const total = originals.length;
-
-// DUPLICATE AT START & END
-originals.forEach(c => slider.appendChild(c.cloneNode(true)));
-originals.slice().reverse().forEach(c =>
-  slider.insertBefore(c.cloneNode(true), slider.firstChild)
-);
-
-// SELECT ALL CARDS AFTER CLONING
-let cards = [...document.querySelectorAll(".card")];
-
-const gap = 6;
-const cardWidth = 200 + gap;
-
-// STRONGER CURVE
-const curveStrength = 18;
-
-// CENTER REAL SET
-slider.scrollLeft = cardWidth * total;
-
-// UPDATE FUNCTION
 function update() {
-  const centerX = slider.scrollLeft + slider.clientWidth / 2;
+  const scrollCenter = slider.scrollLeft + slider.clientWidth / 2;
 
   cards.forEach((card, i) => {
-    const cardX = i * cardWidth + cardWidth / 2;
-    const dx = cardX - centerX;
+    const cardCenter = i * cardWidth + cardWidth / 2;
 
-    const angle = dx / 8;                   // stronger curve
-    const depth = -Math.abs(dx) / curveStrength; // more pronounced 3D
+    // distance from center
+    const dx = cardCenter - scrollCenter;
+
+    // stronger curve
+    const angle = dx / 10;               // more aggressive curve
+    const depth = -Math.abs(dx) / curveStrength;
 
     card.style.transform = `
       rotateY(${angle}deg)
       translateZ(${depth}px)
     `;
   });
-
-  const maxScroll = cardWidth * (total * 2);
-  const minScroll = cardWidth * 0.5;
-
-  // SAFE INFINITE LOOP RESET (no stutter)
-  if (slider.scrollLeft < minScroll) {
-    slider.style.scrollBehavior = "auto";
-    slider.scrollLeft += cardWidth * total;
-    return;
-  }
-
-  if (slider.scrollLeft > maxScroll) {
-    slider.style.scrollBehavior = "auto";
-    slider.scrollLeft -= cardWidth * total;
-    return;
-  }
 }
 
 update();
-slider.addEventListener("scroll", () => {
-  slider.style.scrollBehavior = "auto"; // always off
-  update();
-});
+slider.addEventListener("scroll", update);
+window.addEventListener("resize", update);
 </script>
 
 </body>
