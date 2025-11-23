@@ -3,32 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IZAH Carousel Demo</title>
+<title>IZAH Curved Carousel Demo</title>
 
 <style>
   body {
     margin: 0;
     padding: 0;
-    background: #f2f2f7;
-    font-family: Arial, sans-serif;
+    background: #eef1f5;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    font-family: Arial;
+  }
+
+  .carousel-wrapper {
+    perspective: 1000px;
+    width: 90%;
+    max-width: 600px;
   }
 
   .carousel {
     display: flex;
-    gap: 20px;
+    gap: 40px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding: 20px;
-    width: 90%;
-    max-width: 450px;
     border-radius: 20px;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     scrollbar-width: none;
+    transform-style: preserve-3d;
   }
 
   .carousel::-webkit-scrollbar {
@@ -42,25 +45,40 @@
     border-radius: 14px;
     scroll-snap-align: center;
     flex-shrink: 0;
-    transition: transform 0.3s ease;
+    transition: transform 0.35s ease, opacity 0.35s ease;
   }
 
-  .carousel img:active {
-    transform: scale(0.95);
+  /* 3D Curve Effect */
+  .carousel img {
+    transform: rotateY(15deg);
+    opacity: 0.5;
+  }
+
+  .carousel img:nth-child(2) {
+    transform: rotateY(0deg) scale(1.05);
+    opacity: 1;
+  }
+
+  /* Auto-center scaling while scrolling */
+  .carousel {
+    scroll-behavior: smooth;
   }
 </style>
 </head>
 
 <body>
 
-<div class="carousel">
-  <img src="https://picsum.photos/id/1018/400/300" alt="pic1">
-  <img src="https://picsum.photos/id/1025/400/300" alt="pic2">
-  <img src="https://picsum.photos/id/1003/400/300" alt="pic3">
+<div class="carousel-wrapper">
+  <div class="carousel" id="carousel3d">
+    <img src="https://picsum.photos/id/1043/400/300">
+    <img src="https://picsum.photos/id/1025/400/300">
+    <img src="https://picsum.photos/id/1021/400/300">
+    <img src="https://picsum.photos/id/1035/400/300">
+  </div>
 </div>
 
 <script>
-  const slider = document.querySelector('.carousel');
+  const slider = document.getElementById('carousel3d');
   let isDown = false;
   let startX;
   let scrollLeft;
@@ -77,6 +95,24 @@
     e.preventDefault();
     const x = e.pageX - slider.offsetLeft;
     slider.scrollLeft = scrollLeft - (x - startX);
+  });
+
+  /* Apply dynamic 3D transform based on scroll position */
+  slider.addEventListener('scroll', () => {
+    const images = slider.querySelectorAll('img');
+    const center = slider.scrollLeft + slider.clientWidth / 2;
+
+    images.forEach(img => {
+      const box = img.offsetLeft + img.clientWidth / 2;
+      const diff = center - box;
+
+      const angle = diff / 40;
+      const scale = 1 - Math.min(Math.abs(diff) / 500, 0.3);
+      const opacity = 1 - Math.min(Math.abs(diff) / 300, 0.5);
+
+      img.style.transform = `rotateY(${angle}deg) scale(${scale})`;
+      img.style.opacity = opacity;
+    });
   });
 </script>
 
